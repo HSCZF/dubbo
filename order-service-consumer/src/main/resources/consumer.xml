@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://dubbo.apache.org/schema/dubbo        http://dubbo.apache.org/schema/dubbo/dubbo.xsd
+                           http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 扫描包 -->
+    <context:component-scan base-package="com.example.service.impl"></context:component-scan>
+
+    <!-- 1、指定当前服务/应用的名字（同样的服务名字相同，不要和别的服务同名） -->
+    <dubbo:application name="order-service-consumer"></dubbo:application>
+
+    <!-- 2、指定注册中心的位置 -->
+    <!--<dubbo:registry address="zookeeper://127.0.0.1:2181"></dubbo:registry>-->
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181"></dubbo:registry>
+
+    <!-- 3、声明需要调用的远程服务的接口，生成远程服务代理 -->
+    <!--  配置本地存根-->
+
+    <!--声明需要调用的远程服务的接口；生成远程服务代理  -->
+    <!--
+        1）、精确优先 (方法级优先，接口级次之，全局配置再次之)
+        2）、消费者设置优先(如果级别一样，则消费方优先，提供方次之)
+    -->
+    <!-- retries="":重试次数，不包含第一次调用，0代表不重试-->
+    <!-- 幂等（设置重试次数）【查询、删除、修改】、非幂等（不能设置重试次数）【新增】 -->
+    <!-- timeout="0" 超时默认是1000ms -->
+    <dubbo:reference interface="com.example.service.UserService"
+                     id="userService">
+    </dubbo:reference>
+
+    <!-- 配置当前消费者的统一规则: 所有的服务都不检查-->
+    <!--<dubbo:consumer check="false" timeout="5000"></dubbo:consumer>-->
+
+    <!-- 配置监控中心 -->
+    <dubbo:monitor protocol="registry"></dubbo:monitor>
+    <!--<dubbo:monitor address="127.0.0.1:7070"></dubbo:monitor>-->
+
+
+</beans>
